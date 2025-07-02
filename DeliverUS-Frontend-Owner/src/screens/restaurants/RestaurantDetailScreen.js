@@ -55,6 +55,12 @@ export default function RestaurantDetailScreen ({ navigation, route }) {
   }
 
   const renderProduct = ({ item }) => {
+    // Implementamos la lógica de que los productos que estén a una semana o menos de desaparecer
+    const currentDate = new Date() // Devuelve la fecha actual
+    // Como las fechas se convierten en milisegundos, se comparan en milisegundos
+    const oneWeekInMs = 7 * 24 * 60 * 60 * 1000 // 7 días en milisegundos
+    const visibleUntilDate = new Date(item.visibleUntil)
+    const lessThanOneWeek = visibleUntilDate - currentDate <= oneWeekInMs // Esto devuelve true o false
     return (
       <ImageCard
         imageUri={item.image ? { uri: process.env.API_BASE_URL + '/' + item.image } : defaultProductImage}
@@ -62,6 +68,7 @@ export default function RestaurantDetailScreen ({ navigation, route }) {
       >
         <TextRegular numberOfLines={2}>{item.description}</TextRegular>
         <TextSemiBold textStyle={styles.price}>{item.price.toFixed(2)}€</TextSemiBold>
+        {lessThanOneWeek && item.visibleUntil && (<TextRegular textStyle={{ color: GlobalStyles.brandPrimary, textAlign: 'right' }}>Is about to disappear!</TextRegular>)}
         {!item.availability &&
           <TextRegular textStyle={styles.availability }>Not available</TextRegular>
         }

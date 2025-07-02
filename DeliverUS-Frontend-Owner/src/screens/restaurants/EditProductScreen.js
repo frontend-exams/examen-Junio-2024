@@ -21,7 +21,7 @@ export default function EditProductScreen ({ navigation, route }) {
   const [backendErrors, setBackendErrors] = useState()
   const [product, setProduct] = useState({})
 
-  const [initialProductValues, setInitialProductValues] = useState({ name: null, description: null, price: null, order: null, productCategoryId: null, availability: null, image: null })
+  const [initialProductValues, setInitialProductValues] = useState({ name: null, description: null, price: null, order: null, productCategoryId: null, availability: null, image: null, visibleUntil: null })
   const validationSchema = yup.object().shape({
     name: yup
       .string()
@@ -42,7 +42,10 @@ export default function EditProductScreen ({ navigation, route }) {
       .number()
       .positive()
       .integer()
-      .required('Product category is required')
+      .required('Product category is required'),
+    visibleUntil: yup
+      .date()
+      .nullable() // Permite que tenga un valor nulo
   })
 
   useEffect(() => {
@@ -114,7 +117,7 @@ export default function EditProductScreen ({ navigation, route }) {
       navigation.navigate('RestaurantDetailScreen', { id: product.restaurantId })
     } catch (error) {
       console.log(error)
-      setBackendErrors(error.errors)
+      setBackendErrors(error.errors) // Muestra en el formulario los errores de backend que hemos programado
     }
   }
   return (
@@ -159,7 +162,10 @@ export default function EditProductScreen ({ navigation, route }) {
                 dropDownStyle={{ backgroundColor: '#fafafa' }}
               />
               <ErrorMessage name={'productCategoryId'} render={msg => <TextError>{msg}</TextError> }/>
-
+              <InputItem
+                name='visibleUntil'
+                label='Visible until'
+              />
               <TextRegular>Is it available?</TextRegular>
               <Switch
                 trackColor={{ false: GlobalStyles.brandSecondary, true: GlobalStyles.brandPrimary }}

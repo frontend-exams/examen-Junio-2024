@@ -7,5 +7,4 @@ const buildInitialValues = (entity, initialEntityValues) => {
   })
   return initialValues
 }
-
 export { buildInitialValues }
