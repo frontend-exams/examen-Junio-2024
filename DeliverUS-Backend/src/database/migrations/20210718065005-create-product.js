@@ -18,6 +18,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DOUBLE
       },
+      // Solution
+      basePrice: {
+        allowNull: false,
+        type: Sequelize.DOUBLE
+      },
       image: {
         type: Sequelize.STRING
       },
