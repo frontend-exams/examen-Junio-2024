@@ -15,7 +15,7 @@ module.exports = {
         type: Sequelize.TEXT
       },
       price: {
-        allowNull: false,
+        allowNull: false, // Es obligatorio
         type: Sequelize.DOUBLE
       },
       image: {
@@ -26,6 +26,11 @@ module.exports = {
       },
       availability: {
         type: Sequelize.BOOLEAN
+      },
+      // Solution
+      visibleUntil: {
+        // Puede ser null, no está el allowNull:false
+        type: Sequelize.DATE
       },
       restaurantId: {
         type: Sequelize.INTEGER,
