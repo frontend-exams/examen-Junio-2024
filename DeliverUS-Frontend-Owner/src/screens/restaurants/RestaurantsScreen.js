@@ -40,6 +40,17 @@ export default function RestaurantsScreen ({ navigation, route }) {
           <TextSemiBold>Avg. service time: <TextSemiBold textStyle={{ color: GlobalStyles.brandPrimary }}>{item.averageServiceMinutes} min.</TextSemiBold></TextSemiBold>
         }
         <TextSemiBold>Shipping: <TextSemiBold textStyle={{ color: GlobalStyles.brandPrimary }}>{item.shippingCosts.toFixed(2)}€</TextSemiBold></TextSemiBold>
+        {/* Solución */}
+        {item.percentage < 0
+          ? (
+          <TextRegular style={{ color: GlobalStyles.brandSuccess }}>¡Descuento aplicado!</TextRegular>
+            )
+          : item.percentage > 0
+            ? (
+          <TextRegular style={{ color: GlobalStyles.brandPrimary }}>¡Incremento de precios aplicado!</TextRegular>
+              )
+            : null
+          }
         <View style={styles.actionButtonsContainer}>
           <Pressable
             onPress={() => navigation.navigate('EditRestaurantScreen', { id: item.id })
