@@ -19,6 +19,7 @@ const loadModel = (sequelize, DataTypes) => {
     }
 
     // Alternative solution
+    // Así se definen los métodos, sin poner function ni nada
     isVisible () {
       const currentDate = new Date()
       let isVisible = true
