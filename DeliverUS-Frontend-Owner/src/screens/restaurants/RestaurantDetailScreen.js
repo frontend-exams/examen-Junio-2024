@@ -53,7 +53,14 @@ export default function RestaurantDetailScreen ({ navigation, route }) {
       </View>
     )
   }
-
+  // Creamos una función que devuelva true o false si queda menos de una semana para que desaparezca el producto
+  const isWeekLeft = (item) => {
+    const visibleUntil = new Date(item.visibleUntil)
+    const currentTime = new Date()
+    const weekInMs = 7 * 24 * 60 * 60 * 1000 // Tenemos que convertir una semana en milisegundos
+    // Recordar que las comparaciones las hacemos en milisegundos
+    return Math.abs(visibleUntil - currentTime) <= weekInMs // Devuelve true si queda una semana o menos para que desaparezca el producto
+  }
   const renderProduct = ({ item }) => {
     return (
       <ImageCard
@@ -62,6 +69,13 @@ export default function RestaurantDetailScreen ({ navigation, route }) {
       >
         <TextRegular numberOfLines={2}>{item.description}</TextRegular>
         <TextSemiBold textStyle={styles.price}>{item.price.toFixed(2)}€</TextSemiBold>
+        {/* Solución ---> OJO hay que mirar que el item también tenga la propiedad de visibleUntil */}
+      {item.visibleUntil && isWeekLeft(item)
+        ? (
+        <TextRegular style={{ color: GlobalStyles.brandPrimary, textAlign: 'right' }}>Is about to disappear!</TextRegular>
+          )
+        : null}
+
         {!item.availability &&
           <TextRegular textStyle={styles.availability }>Not available</TextRegular>
         }
