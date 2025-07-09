@@ -81,7 +81,7 @@ const update = async function (req, res) {
         restaurantId: req.params.restaurantId
       }
     })
-
+    // Esta es la lógica que actualiza todos los productos de un determinado restaurante conforme el porcentaje del restaurante
     for (const product of productsToBeUpdated) {
       const newPrice = product.basePrice + product.basePrice * (req.body.percentage / 100)
       await product.update({ price: newPrice }, transaction)
