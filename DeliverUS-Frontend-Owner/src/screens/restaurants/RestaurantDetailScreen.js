@@ -53,7 +53,12 @@ export default function RestaurantDetailScreen ({ navigation, route }) {
       </View>
     )
   }
-
+  // Creamos una función que nos diga si falta menos de una semana para que deje de ser visible
+  const lessThanAWeek = (item) => {
+    const currentDate = new Date()
+    const visible = new Date(item.visibleUntil)
+    return Math.abs(visible - currentDate) <= 7 * 24 * 60 * 60 * 1000 // Hay que pasar los 7 días de una semana a milisegundos
+  }
   const renderProduct = ({ item }) => {
     return (
       <ImageCard
@@ -62,6 +67,10 @@ export default function RestaurantDetailScreen ({ navigation, route }) {
       >
         <TextRegular numberOfLines={2}>{item.description}</TextRegular>
         <TextSemiBold textStyle={styles.price}>{item.price.toFixed(2)}€</TextSemiBold>
+        {/* Solución */}
+        { lessThanAWeek(item) && (
+          <TextRegular style={{ color: GlobalStyles.brandPrimary, textAlign: 'rigth', marginLeft: 'auto' }}>Is about to disappear!</TextRegular>
+        )}
         {!item.availability &&
           <TextRegular textStyle={styles.availability }>Not available</TextRegular>
         }

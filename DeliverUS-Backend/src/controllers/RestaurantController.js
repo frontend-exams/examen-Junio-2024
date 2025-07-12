@@ -47,6 +47,11 @@ const create = async function (req, res) {
   }
 }
 
+// Solucion
+const filterNotVisible = (restaurant) => {
+  return restaurant.products.filter((product) => product.isVisible()) // Solo saca los productos que son visibles
+}
+
 const show = async function (req, res) {
   // Only returns PUBLIC information of restaurants
   try {
@@ -64,6 +69,8 @@ const show = async function (req, res) {
       order: [[{ model: Product, as: 'products' }, 'order', 'ASC']]
     }
     )
+    const newProducts = filterNotVisible(restaurant)
+    restaurant.setProducts(newProducts)
     res.json(restaurant)
   } catch (err) {
     res.status(500).send(err)

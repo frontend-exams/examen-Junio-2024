@@ -21,7 +21,7 @@ export default function EditProductScreen ({ navigation, route }) {
   const [backendErrors, setBackendErrors] = useState()
   const [product, setProduct] = useState({})
 
-  const [initialProductValues, setInitialProductValues] = useState({ name: null, description: null, price: null, order: null, productCategoryId: null, availability: null, image: null })
+  const [initialProductValues, setInitialProductValues] = useState({ name: null, description: null, price: null, order: null, productCategoryId: null, availability: null, image: null, visibleUntil: null })
   const validationSchema = yup.object().shape({
     name: yup
       .string()
@@ -42,7 +42,10 @@ export default function EditProductScreen ({ navigation, route }) {
       .number()
       .positive()
       .integer()
-      .required('Product category is required')
+      .required('Product category is required'),
+    visibleUntil: yup
+      .date()
+      .nullable()
   })
 
   useEffect(() => {
@@ -75,6 +78,9 @@ export default function EditProductScreen ({ navigation, route }) {
         const preparedProduct = prepareEntityImages(fetchedProduct, ['image'])
         setProduct(preparedProduct)
         const initialValues = buildInitialValues(preparedProduct, initialProductValues)
+        if (initialValues.visibleUntil && typeof initialValues.visibleUntil === 'string') {
+          initialValues.visibleUntil = initialValues.visibleUntil.split('T')[0] // De esta forma quitamos la fecha "fea"
+        }
         setInitialProductValues(initialValues)
       } catch (error) {
         showMessage({
@@ -160,6 +166,12 @@ export default function EditProductScreen ({ navigation, route }) {
               />
               <ErrorMessage name={'productCategoryId'} render={msg => <TextError>{msg}</TextError> }/>
 
+              {/* Solución */}
+              <InputItem
+                name='visibleUntil'
+                label='Visible Until:'
+                placeholder='yyyy-mm-dd'
+              />
               <TextRegular>Is it available?</TextRegular>
               <Switch
                 trackColor={{ false: GlobalStyles.brandSecondary, true: GlobalStyles.brandPrimary }}
