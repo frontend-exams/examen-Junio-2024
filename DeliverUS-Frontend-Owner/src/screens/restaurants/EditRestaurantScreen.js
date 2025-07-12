@@ -15,14 +15,18 @@ import { ErrorMessage, Formik } from 'formik'
 import TextError from '../../components/TextError'
 import { prepareEntityImages } from '../../api/helpers/FileUploadHelper'
 import { buildInitialValues } from '../Helper'
+import TextSemiBold from '../../components/TextSemibold'
+import ConfirmationModal from '../../components/ConfirmationModal'
 
 export default function EditRestaurantScreen ({ navigation, route }) {
   const [open, setOpen] = useState(false)
   const [restaurantCategories, setRestaurantCategories] = useState([])
   const [backendErrors, setBackendErrors] = useState()
   const [restaurant, setRestaurant] = useState({})
-
-  const [initialRestaurantValues, setInitialRestaurantValues] = useState({ name: null, description: null, address: null, postalCode: null, url: null, shippingCosts: null, email: null, phone: null, restaurantCategoryId: null, logo: null, heroImage: null })
+  // Solución
+  const [restaurantPercentage, setRestaurantPercentage] = useState(null)
+  const [formValues, setFormValues] = useState(null)
+  const [initialRestaurantValues, setInitialRestaurantValues] = useState({ name: null, description: null, address: null, postalCode: null, url: null, shippingCosts: null, email: null, phone: null, restaurantCategoryId: null, logo: null, heroImage: null, percentage: 0.0 })
   const validationSchema = yup.object().shape({
     name: yup
       .string()
@@ -56,7 +60,9 @@ export default function EditRestaurantScreen ({ navigation, route }) {
       .number()
       .positive()
       .integer()
-      .required('Restaurant category is required')
+      .required('Restaurant category is required'),
+    percentage: yup
+      .number()
   })
 
   useEffect(() => {
@@ -67,6 +73,7 @@ export default function EditRestaurantScreen ({ navigation, route }) {
         setRestaurant(preparedRestaurant)
         const initialValues = buildInitialValues(preparedRestaurant, initialRestaurantValues)
         setInitialRestaurantValues(initialValues)
+        setRestaurantPercentage(initialValues.percentage) // Cuando carga la página ponemos como percentage lo que estaba en el percentage de los initialValues
       } catch (error) {
         showMessage({
           message: `There was an error while retrieving restaurant details (id ${route.params.id}). ${error}`,
@@ -130,7 +137,11 @@ export default function EditRestaurantScreen ({ navigation, route }) {
   const updateRestaurant = async (values) => {
     setBackendErrors([])
     try {
-      const updatedRestaurant = await update(restaurant.id, values)
+      const valuesWithPercentage = {
+        ...values,
+        percentage: restaurantPercentage // Sobreescribe la propiedad percentage
+      }
+      const updatedRestaurant = await update(restaurant.id, valuesWithPercentage)
       showMessage({
         message: `Restaurant ${updatedRestaurant.name} succesfully updated`,
         type: 'success',
@@ -145,11 +156,12 @@ export default function EditRestaurantScreen ({ navigation, route }) {
   }
 
   return (
+    <>
     <Formik
       enableReinitialize
       validationSchema={validationSchema}
       initialValues={initialRestaurantValues}
-      onSubmit={updateRestaurant}>
+      onSubmit={setFormValues}>
       {({ handleSubmit, setFieldValue, values }) => (
         <ScrollView>
           <View style={{ alignItems: 'center' }}>
@@ -178,6 +190,22 @@ export default function EditRestaurantScreen ({ navigation, route }) {
                 name='shippingCosts'
                 label='Shipping costs:'
               />
+              {/* Solución */}
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Pressable
+                onPress={() => setRestaurantPercentage(restaurantPercentage + 0.5)}
+                disabled={restaurantPercentage >= 5}
+              >
+                <MaterialCommunityIcons name='arrow-up-circle' color={restaurantPercentage >= 5 ? '#e0e0e0' : GlobalStyles.brandSecondaryTap} size={40}/>
+              </Pressable>
+                <TextSemiBold>Porcentaje actual: <TextRegular style={{ color: GlobalStyles.brandPrimary }}>{restaurantPercentage}%</TextRegular></TextSemiBold>
+              <Pressable
+                onPress={() => setRestaurantPercentage(restaurantPercentage - 0.5)}
+                disabled={restaurantPercentage <= -5}
+              >
+                <MaterialCommunityIcons name='arrow-down-circle' color={restaurantPercentage <= -5 ? '#e0e0e0' : GlobalStyles.brandSecondaryTap} size={40}/>
+              </Pressable>
+              </View>
               <InputItem
                 name='email'
                 label='Email:'
@@ -255,6 +283,12 @@ export default function EditRestaurantScreen ({ navigation, route }) {
         </ScrollView>
       )}
     </Formik>
+    <ConfirmationModal
+      isVisible={formValues !== null}
+      onCancel={() => setFormValues(null)}
+      onConfirm={() => updateRestaurant(formValues)}
+      />
+    </>
   )
 }
 

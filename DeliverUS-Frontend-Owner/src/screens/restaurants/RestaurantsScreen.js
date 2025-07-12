@@ -40,6 +40,14 @@ export default function RestaurantsScreen ({ navigation, route }) {
           <TextSemiBold>Avg. service time: <TextSemiBold textStyle={{ color: GlobalStyles.brandPrimary }}>{item.averageServiceMinutes} min.</TextSemiBold></TextSemiBold>
         }
         <TextSemiBold>Shipping: <TextSemiBold textStyle={{ color: GlobalStyles.brandPrimary }}>{item.shippingCosts.toFixed(2)}€</TextSemiBold></TextSemiBold>
+        {/* Solución */}
+        {
+          item.percentage > 0
+            ? (<TextSemiBold style={{ color: GlobalStyles.brandPrimary, marginBottom: 20 }}>¡Incremento de precios aplicados!</TextSemiBold>)
+            : item.percentage !== 0
+              ? (<TextSemiBold style={{ color: GlobalStyles.brandSuccess, marginBottom: 20 }}>¡Descuentos aplicados!</TextSemiBold>)
+              : null
+        }
         <View style={styles.actionButtonsContainer}>
           <Pressable
             onPress={() => navigation.navigate('EditRestaurantScreen', { id: item.id })
@@ -133,7 +141,7 @@ export default function RestaurantsScreen ({ navigation, route }) {
   const removeRestaurant = async (restaurant) => {
     try {
       await remove(restaurant.id)
-      await fetchRestaurants()
+      await fetchRestaurants() // Aquí si se pone el await en el useEffect no !!
       setRestaurantToBeDeleted(null)
       showMessage({
         message: `Restaurant ${restaurant.name} succesfully removed`,
